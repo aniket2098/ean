@@ -5,10 +5,11 @@ const kInfoLayoutCardBorderRadius = 35.0;
 const kInfoLayoutCardTitleMultiplicationFactor = 1.5;
 const kInfoLayoutCardInfoMultiplicationFactor = 2;
 const kInfoLayoutCardTitleOpacity = 0.7;
+const kCircularLoaderSideLength = 50.0;
 
 const kTitle = 'EAN';
 
-Color kInfoLayoutCardColor = Color(0xFF374785);
+Color kCardColor = Color(0xFF374785);
 Color kScaffoldBackgroundColor = Colors.blueGrey[100];
 Color kAppBarBackGroundColor = Colors.blue[800];
 

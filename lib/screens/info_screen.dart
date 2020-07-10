@@ -4,44 +4,61 @@ import 'package:ean/components/info_layout_card.dart';
 import 'package:ean/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Home extends StatefulWidget {
+class InfoScreen extends StatefulWidget {
   @override
-  _HomeState createState() => _HomeState();
+  _InfoScreenState createState() => _InfoScreenState();
 }
 
-class _HomeState extends State<Home> {
+class _InfoScreenState extends State<InfoScreen> {
   bool isLoaded = false;
+  bool errorOccured = false;
 
   List<int> info = [0, 0, 0, 0];
   void getData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String token = prefs.getString('pict_ean_admin');
     final http.Response response = await http.post(
       'https://studentdata11.herokuapp.com/data',
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode({
-        'token':
-            'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiAiQXV0aC1TZXJ2aWNlIiwgImlhdCI6IDE1OTQzNzQ5MTksICJleHAiOiAxNTk0Mzc4NTE5LCAic3ViIjogeyJyb2xlIjogImFkbWluIiwgImlkIjogMX19.r-Og2GTe7vQY6h_ICUIvE7xqasyXoD2AvBrIZch1h4Ktl8jW90yqVfzSDPf4ckDSpDly1NHDN-6LVFhxEtuQ2ZgYc3lLtnzlrOgjMeDi_309TRZ0iQUJqTW8Fhr0bzqCFTGgta6fgs88L5PYWMVWrXLuEyIpqXUJADfePpQSVsY',
+        'token': token,
       }),
     );
+    print(response.body);
     if (response.statusCode == 200) {
       // If the server did return a 201 CREATED response,
       // then parse the JSON.
       var decodedJson = json.decode(response.body);
-      var data = decodedJson['data'];
+      if (decodedJson['msg'] == 'Success') {
+        var data = decodedJson['data'];
+        setState(() {
+          for (int i = 0; i < data['count']; i++) {
+            info[i] = data['list'][i]['value'];
+          }
+          isLoaded = true;
+        });
+      } else {
+        setState(() {
+          errorOccured = true;
+        });
+      }
+    } else {
       setState(() {
-        for (int i = 0; i < data['count']; i++) {
-          info[i] = data['list'][i]['value'];
-        }
-        isLoaded = true;
+        errorOccured = true;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    getData();
+    if (!isLoaded & !errorOccured) {
+      getData();
+    }
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     if (width > height) {
@@ -52,21 +69,30 @@ class _HomeState extends State<Home> {
     double padding = width / 40;
     height -= 2 * padding;
     width -= 2 * padding;
-    return !isLoaded
-        ? Center(
-            child: Container(
-              height: 50.0,
-              width: 50.0,
-              child: CircularProgressIndicator(),
-            ),
-          )
-        : Scaffold(
-            backgroundColor: kScaffoldBackgroundColor,
-            appBar: AppBar(
-              title: Text(kTitle),
-              backgroundColor: kAppBarBackGroundColor,
-            ),
-            body: Center(
+    return Scaffold(
+      backgroundColor: kScaffoldBackgroundColor,
+      appBar: AppBar(
+        title: Text(kTitle),
+        backgroundColor: kAppBarBackGroundColor,
+      ),
+      body: !isLoaded
+          ? errorOccured
+              ? Center(
+                  child: Text(
+                    'An Error Occured\nPlease Login Again',
+                    style: TextStyle(
+                      fontSize: 30.0,
+                    ),
+                  ),
+                )
+              : Center(
+                  child: Container(
+                    height: kCircularLoaderSideLength,
+                    width: kCircularLoaderSideLength,
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+          : Center(
               child: Container(
                 color: Colors.transparent,
                 height: height,
@@ -127,6 +153,6 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
-          );
+    );
   }
 }

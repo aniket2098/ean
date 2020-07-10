@@ -24,7 +24,7 @@ class InfoLayoutCard extends StatelessWidget {
           bottomLeft: Radius.circular(kInfoLayoutCardBorderRadius),
           bottomRight: Radius.circular(kInfoLayoutCardBorderRadius),
         )),
-        color: kInfoLayoutCardColor,
+        color: kCardColor,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
