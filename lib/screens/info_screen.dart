@@ -16,12 +16,13 @@ class _InfoScreenState extends State<InfoScreen> {
   bool errorOccured = false;
 
   List<int> info = [0, 0, 0, 0];
+
   void getData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    String token = prefs.getString('pict_ean_admin');
+    String token = prefs.getString(kSharedPreferenceKey);
     final http.Response response = await http.post(
-      'https://studentdata11.herokuapp.com/data',
+      kDataUrl,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -30,11 +31,10 @@ class _InfoScreenState extends State<InfoScreen> {
       }),
     );
     print(response.body);
-    if (response.statusCode == 200) {
-      // If the server did return a 201 CREATED response,
-      // then parse the JSON.
+    if (response.statusCode == kStatusCodeOk) {
       var decodedJson = json.decode(response.body);
-      if (decodedJson['msg'] == 'Success') {
+
+      if (decodedJson['msg'] == kInfoSuccessMssg) {
         var data = decodedJson['data'];
         setState(() {
           for (int i = 0; i < data['count']; i++) {
@@ -64,24 +64,25 @@ class _InfoScreenState extends State<InfoScreen> {
     if (width > height) {
       width = height;
     } else {
-      height = width * 1.5;
+      height = width * kHeightMultiplicationFactor;
     }
-    double padding = width / 40;
+    double padding = width / kPaddingDivisionFactor;
     height -= 2 * padding;
     width -= 2 * padding;
     return Scaffold(
-      backgroundColor: kScaffoldBackgroundColor,
+      backgroundColor: fScaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(kTitle),
-        backgroundColor: kAppBarBackGroundColor,
+        backgroundColor: fAppBarBackGroundColor,
       ),
       body: !isLoaded
           ? errorOccured
               ? Center(
                   child: Text(
-                    'An Error Occured\nPlease Login Again',
+                    kErrorMssg,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 30.0,
+                      fontSize: kErrorMessageFontSize,
                     ),
                   ),
                 )
@@ -107,7 +108,7 @@ class _InfoScreenState extends State<InfoScreen> {
                           child: Row(
                             children: [
                               InfoLayoutCard(
-                                title: 'FE',
+                                title: kFE,
                                 count: info[0],
                                 fontSize: padding,
                               ),
@@ -116,7 +117,7 @@ class _InfoScreenState extends State<InfoScreen> {
                                 color: Colors.transparent,
                               ),
                               InfoLayoutCard(
-                                title: 'CS',
+                                title: kCS,
                                 count: info[1],
                                 fontSize: padding,
                               ),
@@ -131,7 +132,7 @@ class _InfoScreenState extends State<InfoScreen> {
                           child: Row(
                             children: [
                               InfoLayoutCard(
-                                title: 'IT',
+                                title: kIT,
                                 count: info[2],
                                 fontSize: padding,
                               ),
@@ -140,7 +141,7 @@ class _InfoScreenState extends State<InfoScreen> {
                                 width: padding,
                               ),
                               InfoLayoutCard(
-                                title: 'ENTC',
+                                title: kEnTC,
                                 count: info[3],
                                 fontSize: padding,
                               ),

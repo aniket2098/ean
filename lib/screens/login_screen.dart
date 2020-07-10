@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:ean/utils/constants.dart';
@@ -13,9 +12,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  Future<bool> getData(username, password) async {
+  Future<bool> _login(username, password) async {
     final http.Response response = await http.post(
-      'https://studentdata11.herokuapp.com/login',
+      kLoginUrl,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -24,23 +23,22 @@ class _LoginScreenState extends State<LoginScreen> {
         'password': password,
       }),
     );
-    print(response.body);
-    if (response.statusCode == 200) {
+
+    if (response.statusCode == kStatusCodeOk) {
       var decodedJson = json.decode(response.body);
-      if (decodedJson['msg'] == 'Login Success') {
-        print("Success");
+      if (decodedJson['msg'] == kLoginSuccessMssg) {
         var token = decodedJson['token'];
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('pict_ean_admin', token);
+        await prefs.setString(kSharedPreferenceKey, token);
         return true;
       }
     }
     return false;
   }
 
-  TextStyle style = TextStyle(fontSize: 15.0);
   bool loginPressed = false;
   bool errorOccurred = false;
+
   @override
   Widget build(BuildContext context) {
     String username;
@@ -48,128 +46,132 @@ class _LoginScreenState extends State<LoginScreen> {
     double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: kScaffoldBackgroundColor,
+      backgroundColor: fScaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text('EAN'),
+        title: Text(kTitle),
       ),
       body: LoadingOverlay(
         isLoading: loginPressed,
         child: Center(
           child: SingleChildScrollView(
             child: Container(
-              width: 350.0 > width ? width : 350.0,
+              width: kLoginDefaultContainerWidth > width
+                  ? width
+                  : kLoginDefaultContainerWidth,
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: kLoginCardPadding,
                 child: Card(
                   color: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
+                    borderRadius: BorderRadius.circular(kLoginCardBorderRadius),
                   ),
                   elevation: kInfoLayoutCardElevation,
-                  child: Stack(children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                              color: Colors.grey[900],
-                              blurRadius: 10.0,
-                              offset: Offset(0.0, 0.75))
-                        ],
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20.0),
-                            topRight: Radius.circular(20.0)),
-                        color: kCardColor,
-                      ),
-                      height: 60.0,
-                      child: Center(
-                        child: Text('Login',
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          boxShadow: <BoxShadow>[fLoginHeaderBoxShadow],
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(kLoginCardBorderRadius),
+                            topRight: Radius.circular(kLoginCardBorderRadius),
+                          ),
+                          color: kInfoLayoutCardColor,
+                        ),
+                        height: kLoginHeaderContainerHeight,
+                        child: Center(
+                          child: Text(
+                            kLoginHeader,
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 30.0,
-                              fontWeight: FontWeight.bold,
-                            )),
+                            style: kLoginHeaderTextStyle,
+                          ),
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            height: 60.0,
-                          ),
-                          SizedBox(
-                            height: 40.0,
-                          ),
-                          TextField(
-                            obscureText: false,
-                            style: style,
-                            onChanged: (value) => username = value,
-                            decoration: InputDecoration(
-                                errorText:
-                                    errorOccurred ? 'Invalid Username!' : null,
-                                contentPadding:
-                                    EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                                hintText: "Username",
+                      Padding(
+                        padding: kLoginCardContentsPadding,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(height: kLoginContentsSizedBoxHeight),
+                            TextField(
+                              obscureText: false,
+                              style: kTextInputStyle,
+                              onChanged: (value) => username = value,
+                              decoration: InputDecoration(
+                                errorText: errorOccurred
+                                    ? kLoginUsernameErrorMssg
+                                    : null,
+                                contentPadding: kLoginInputPadding,
+                                hintText: kLoginUsernameHint,
                                 border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(32.0))),
-                          ),
-                          SizedBox(
-                            height: 40.0,
-                          ),
-                          TextField(
-                            obscureText: true,
-                            style: style,
-                            onChanged: (value) => password = value,
-                            decoration: InputDecoration(
-                                errorText:
-                                    errorOccurred ? 'Invalid Password!' : null,
-                                contentPadding:
-                                    EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                                hintText: "Password",
+                                  borderRadius: BorderRadius.circular(
+                                      kLoginInputBorderRadius),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: kLoginBetweenInputsSizedBoxHeight),
+                            TextField(
+                              obscureText: true,
+                              style: kTextInputStyle,
+                              onChanged: (value) => password = value,
+                              decoration: InputDecoration(
+                                errorText: errorOccurred
+                                    ? kLoginPasswordErrorMssg
+                                    : null,
+                                contentPadding: kLoginInputPadding,
+                                hintText: kLoginPasswordHint,
                                 border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(32.0))),
-                          ),
-                          SizedBox(
-                            height: 40.0,
-                          ),
-                          RaisedButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.0)),
-                            child: Text("Login"),
-                            onPressed: () {
-                              setState(() {
-                                loginPressed = true;
-                              });
-                              getData(username, password).then((value) {
-                                if (value) {
-                                  setState(() {
-                                    loginPressed = false;
-                                  });
+                                  borderRadius: BorderRadius.circular(
+                                      kLoginInputBorderRadius),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: kLoginBetweenInputsSizedBoxHeight),
+                            RaisedButton(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0)),
+                              child: Text(kLoginButtonText),
+                              onPressed: () {
+                                setState(
+                                  () {
+                                    loginPressed = true;
+                                  },
+                                );
+                                _login(username, password).then(
+                                  (value) {
+                                    if (value) {
+                                      setState(() {
+                                        loginPressed = false;
+                                      });
 
-                                  Navigator.pushNamed(context, '/InfoScreen');
-                                } else {
-                                  setState(() {
-                                    loginPressed = false;
-                                    errorOccurred = true;
-                                  });
-                                }
-                              });
-                            },
-                            color: Colors.lightBlue,
-                            textColor: Colors.white,
-                            splashColor: Colors.grey,
-                          ),
-                          SizedBox(
-                            height: 60.0,
-                          ),
-                        ],
+                                      Navigator.pushNamed(
+                                        context,
+                                        kRouteInfoScreen,
+                                      );
+                                    } else {
+                                      setState(
+                                        () {
+                                          loginPressed = false;
+                                          errorOccurred = true;
+                                        },
+                                      );
+                                    }
+                                  },
+                                );
+                              },
+                              color: Colors.lightBlue,
+                              textColor: Colors.white,
+                              splashColor: Colors.grey,
+                            ),
+                            SizedBox(
+                              height: kLoginEndSizedBoxHeight,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ]),
+                    ],
+                  ),
                 ),
               ),
             ),

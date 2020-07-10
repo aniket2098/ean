@@ -24,7 +24,7 @@ class InfoLayoutCard extends StatelessWidget {
           bottomLeft: Radius.circular(kInfoLayoutCardBorderRadius),
           bottomRight: Radius.circular(kInfoLayoutCardBorderRadius),
         )),
-        color: kCardColor,
+        color: kInfoLayoutCardColor,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -43,7 +43,7 @@ class InfoLayoutCard extends StatelessWidget {
                 child: Text(
                   title,
                   textAlign: TextAlign.left,
-                  style: kInfoLayoutCardTitleTextStyle.copyWith(
+                  style: fInfoLayoutCardTitleTextStyle.copyWith(
                     fontSize:
                         fontSize * kInfoLayoutCardTitleMultiplicationFactor,
                   ),
@@ -53,7 +53,7 @@ class InfoLayoutCard extends StatelessWidget {
             Expanded(
               child: Center(
                 child: Text(
-                  'Count : $count',
+                  '$count Users',
                   style: kInfoLayoutCardInfoTextStyle.copyWith(
                     fontSize:
                         fontSize * kInfoLayoutCardInfoMultiplicationFactor,

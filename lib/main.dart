@@ -8,18 +8,18 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         title: kTitle,
         theme: ThemeData(
           visualDensity: VisualDensity.adaptivePlatformDensity,
+          fontFamily: 'Raleway',
         ),
-        initialRoute: '/',
+        initialRoute: kRouteLoginScreen,
         routes: {
-          '/': (context) => LoginScreen(),
-          '/InfoScreen': (context) => InfoScreen(),
+          kRouteLoginScreen: (context) => LoginScreen(),
+          kRouteInfoScreen: (context) => InfoScreen(),
         });
   }
 }
