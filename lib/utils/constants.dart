@@ -23,8 +23,8 @@ const kStatusCodeOk = 200;
 
 //String Constants
 const kTitle = 'EAN';
-const kLoginUrl = 'https://studentdata11.herokuapp.com/login';
-const kDataUrl = 'https://studentdata11.herokuapp.com/data';
+const kLoginUrl = 'https://admin.pictean.ml/api/v1/login';
+const kDataUrl = 'https://admin.pictean.ml/api/v1/data';
 const kSharedPreferenceKey = 'pict_ean_admin';
 const kInfoSuccessMssg = 'Success';
 const kLoginSuccessMssg = 'Login Success';

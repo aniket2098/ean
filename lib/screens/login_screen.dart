@@ -13,7 +13,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   Future<bool> _login(username, password) async {
-    final http.Response response = await http.post(
+    final http.Response _response = await http.post(
       kLoginUrl,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -24,26 +24,26 @@ class _LoginScreenState extends State<LoginScreen> {
       }),
     );
 
-    if (response.statusCode == kStatusCodeOk) {
-      var decodedJson = json.decode(response.body);
-      if (decodedJson['msg'] == kLoginSuccessMssg) {
-        var token = decodedJson['token'];
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString(kSharedPreferenceKey, token);
+    if (_response.statusCode == kStatusCodeOk) {
+      var _decodedJson = json.decode(_response.body);
+      if (_decodedJson['msg'] == kLoginSuccessMssg) {
+        var _token = _decodedJson['token'];
+        SharedPreferences _prefs = await SharedPreferences.getInstance();
+        await _prefs.setString(kSharedPreferenceKey, _token);
         return true;
       }
     }
     return false;
   }
 
-  bool loginPressed = false;
-  bool errorOccurred = false;
+  bool _loginPressed = false;
+  bool _errorOccurred = false;
 
   @override
   Widget build(BuildContext context) {
-    String username;
-    String password;
-    double width = MediaQuery.of(context).size.width;
+    String _username;
+    String _password;
+    double _width = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: fScaffoldBackgroundColor,
@@ -51,12 +51,12 @@ class _LoginScreenState extends State<LoginScreen> {
         title: Text(kTitle),
       ),
       body: LoadingOverlay(
-        isLoading: loginPressed,
+        isLoading: _loginPressed,
         child: Center(
           child: SingleChildScrollView(
             child: Container(
-              width: kLoginDefaultContainerWidth > width
-                  ? width
+              width: kLoginDefaultContainerWidth > _width
+                  ? _width
                   : kLoginDefaultContainerWidth,
               child: Padding(
                 padding: kLoginCardPadding,
@@ -97,9 +97,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             TextField(
                               obscureText: false,
                               style: kTextInputStyle,
-                              onChanged: (value) => username = value,
+                              onChanged: (value) => _username = value,
                               decoration: InputDecoration(
-                                errorText: errorOccurred
+                                errorText: _errorOccurred
                                     ? kLoginUsernameErrorMssg
                                     : null,
                                 contentPadding: kLoginInputPadding,
@@ -114,9 +114,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             TextField(
                               obscureText: true,
                               style: kTextInputStyle,
-                              onChanged: (value) => password = value,
+                              onChanged: (value) => _password = value,
                               decoration: InputDecoration(
-                                errorText: errorOccurred
+                                errorText: _errorOccurred
                                     ? kLoginPasswordErrorMssg
                                     : null,
                                 contentPadding: kLoginInputPadding,
@@ -135,14 +135,14 @@ class _LoginScreenState extends State<LoginScreen> {
                               onPressed: () {
                                 setState(
                                   () {
-                                    loginPressed = true;
+                                    _loginPressed = true;
                                   },
                                 );
-                                _login(username, password).then(
+                                _login(_username, _password).then(
                                   (value) {
                                     if (value) {
                                       setState(() {
-                                        loginPressed = false;
+                                        _loginPressed = false;
                                       });
 
                                       Navigator.pushNamed(
@@ -152,8 +152,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     } else {
                                       setState(
                                         () {
-                                          loginPressed = false;
-                                          errorOccurred = true;
+                                          _loginPressed = false;
+                                          _errorOccurred = true;
                                         },
                                       );
                                     }

@@ -12,71 +12,71 @@ class InfoScreen extends StatefulWidget {
 }
 
 class _InfoScreenState extends State<InfoScreen> {
-  bool isLoaded = false;
-  bool errorOccured = false;
+  bool _isLoaded = false;
+  bool _errorOccured = false;
 
-  List<int> info = [0, 0, 0, 0];
+  List<int> _info = [0, 0, 0, 0];
 
-  void getData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  void _getData() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
 
-    String token = prefs.getString(kSharedPreferenceKey);
-    final http.Response response = await http.post(
+    String _token = _prefs.getString(kSharedPreferenceKey);
+    final http.Response _response = await http.post(
       kDataUrl,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode({
-        'token': token,
+        'token': _token,
       }),
     );
-    print(response.body);
-    if (response.statusCode == kStatusCodeOk) {
-      var decodedJson = json.decode(response.body);
+
+    if (_response.statusCode == kStatusCodeOk) {
+      var decodedJson = json.decode(_response.body);
 
       if (decodedJson['msg'] == kInfoSuccessMssg) {
         var data = decodedJson['data'];
         setState(() {
           for (int i = 0; i < data['count']; i++) {
-            info[i] = data['list'][i]['value'];
+            _info[i] = data['list'][i]['value'];
           }
-          isLoaded = true;
+          _isLoaded = true;
         });
       } else {
         setState(() {
-          errorOccured = true;
+          _errorOccured = true;
         });
       }
     } else {
       setState(() {
-        errorOccured = true;
+        _errorOccured = true;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!isLoaded & !errorOccured) {
-      getData();
+    if (!_isLoaded & !_errorOccured) {
+      _getData();
     }
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-    if (width > height) {
-      width = height;
+    double _width = MediaQuery.of(context).size.width;
+    double _height = MediaQuery.of(context).size.height;
+    if (_width > _height) {
+      _width = _height;
     } else {
-      height = width * kHeightMultiplicationFactor;
+      _height = _width * kHeightMultiplicationFactor;
     }
-    double padding = width / kPaddingDivisionFactor;
-    height -= 2 * padding;
-    width -= 2 * padding;
+    double padding = _width / kPaddingDivisionFactor;
+    _height -= 2 * padding;
+    _width -= 2 * padding;
     return Scaffold(
       backgroundColor: fScaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(kTitle),
         backgroundColor: fAppBarBackGroundColor,
       ),
-      body: !isLoaded
-          ? errorOccured
+      body: !_isLoaded
+          ? _errorOccured
               ? Center(
                   child: Text(
                     kErrorMssg,
@@ -96,8 +96,8 @@ class _InfoScreenState extends State<InfoScreen> {
           : Center(
               child: Container(
                 color: Colors.transparent,
-                height: height,
-                width: width,
+                height: _height,
+                width: _width,
                 padding: EdgeInsets.all(padding),
                 child: Center(
                   child: Container(
@@ -109,7 +109,7 @@ class _InfoScreenState extends State<InfoScreen> {
                             children: [
                               InfoLayoutCard(
                                 title: kFE,
-                                count: info[0],
+                                count: _info[0],
                                 fontSize: padding,
                               ),
                               VerticalDivider(
@@ -118,7 +118,7 @@ class _InfoScreenState extends State<InfoScreen> {
                               ),
                               InfoLayoutCard(
                                 title: kCS,
-                                count: info[1],
+                                count: _info[1],
                                 fontSize: padding,
                               ),
                             ],
@@ -133,7 +133,7 @@ class _InfoScreenState extends State<InfoScreen> {
                             children: [
                               InfoLayoutCard(
                                 title: kIT,
-                                count: info[2],
+                                count: _info[2],
                                 fontSize: padding,
                               ),
                               VerticalDivider(
@@ -142,7 +142,7 @@ class _InfoScreenState extends State<InfoScreen> {
                               ),
                               InfoLayoutCard(
                                 title: kEnTC,
-                                count: info[3],
+                                count: _info[3],
                                 fontSize: padding,
                               ),
                             ],
